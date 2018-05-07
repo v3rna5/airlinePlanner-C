@@ -23,6 +23,31 @@ namespace AirplanePlanner.Models
     {
       return _id;
     }
+
+    public void Delete()
+      {
+      MySqlConnection conn = DB.Connection();
+      conn.Open();
+      var cmd = conn.CreateCommand() as MySqlCommand;
+      cmd.CommandText = @"DELETE FROM cities WHERE id = @thisId;";
+
+      var cmdClients = conn.CreateCommand() as MySqlCommand;
+      cmdClients.CommandText = @"DELETE FROM flights WHERE city_id = @thisId;";
+
+      MySqlParameter thisId = new MySqlParameter();
+      thisId.ParameterName = "@thisId";
+      thisId.Value = _id;
+      cmd.Parameters.Add(thisId);
+      cmdFlights.Parameters.Add(thisId);
+      cmdFligths.ExecuteNonQuery();
+
+      cmd.ExecuteNonQuery();
+      conn.Close();
+      if (conn != null)
+      {
+        conn.Dispose();
+      }
+    }
     public static List<Cities> GetAllCities()
     {
       List<Cities> allCities = new List<Cities> {};
