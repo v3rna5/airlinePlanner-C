@@ -59,7 +59,7 @@ namespace AirplanePlanner.Models
 
         MySqlParameter city_id = new MySqlParameter();
         city_id.ParameterName = "@CityId";
-        city_id.Value = newCategory.GetId();
+        city_id.Value = newCity.GetId();
         cmd.Parameters.Add(city_id);
 
         MySqlParameter flight_id = new MySqlParameter();
@@ -164,7 +164,7 @@ namespace AirplanePlanner.Models
           while(rdr.Read())
           {
             int flightId = rdr.GetInt32(0);
-            string flightDepartureTime = rdr.GetString(1);
+            int flightDepartureTime = rdr.GetInt32(1);
             string flightDepartureCity = rdr.GetString(2);
             string flightArrivalCity = rdr.GetString(3);
             string flightStatus = rdr.GetString(4);
@@ -253,5 +253,4 @@ namespace AirplanePlanner.Models
 
         }
 
-    }
   }

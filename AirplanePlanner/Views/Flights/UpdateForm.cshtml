@@ -1,0 +1,12 @@
+<h1>Airline Planner</h1>
+<hr />
+<h2>Edit task: @Model.GetDescription()</h2>
+<form action="/flights/@Model.GetId()/update" method="post">
+  <label for="name">New description:</label>
+  <input type="text" name="newname" value="@Model.GetDescription()">
+  <button type="submit">Edit</button>
+</form>
+<form action="/flights/@Model.GetId()/delete" method="get">
+  <button type="submit">Delete Item</button>
+</form>
+<h4><a href="/flights">Return home</a></h4>

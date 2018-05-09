@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using MySql.Data.MySqlClient;
+using AirplanePlanner.Models;
 using System;
 
 namespace AirplanePlanner.Models
@@ -44,7 +45,7 @@ namespace AirplanePlanner.Models
           while(rdr.Read())
           {
             int flightId = rdr.GetInt32(0);
-            string flightDepartureTime = rdr.GetString(1);
+            int flightDepartureTime = rdr.GetInt32(1);
             string flightDepartureCity = rdr.GetString(2);
             string flightArrivalCity = rdr.GetString(3);
             string flightStatus = rdr.GetString(4);
@@ -155,4 +156,5 @@ namespace AirplanePlanner.Models
         // We no longer read the itemCategoryId here, either.
       }
     }
-  } 
+  }
+}
