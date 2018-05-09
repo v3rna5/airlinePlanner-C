@@ -154,3 +154,5 @@ namespace AirplanePlanner.Models
     //    itemDueDate = rdr.GetString(2);
         // We no longer read the itemCategoryId here, either.
       }
+    }
+  } 
