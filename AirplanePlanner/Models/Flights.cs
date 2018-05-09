@@ -4,7 +4,7 @@ using System;
 
 namespace AirplanePlanner.Models
 {
-  public class Flights
+  public class Flight
   {
     private int _id;
     private int _cityId;
@@ -13,7 +13,7 @@ namespace AirplanePlanner.Models
     private string _arrivalCity;
     private string _status;
 
-    public Flights(int id, int cityId, int departureTime, string departureCity, string arrivalCity, string Status)
+    public Flight(int id, int cityId, int departureTime, string departureCity, string arrivalCity, string Status)
     {
       _id = id;
       _cityId = cityId;
@@ -32,7 +32,7 @@ namespace AirplanePlanner.Models
     }
     public void SetCityId(int id)
     {
-      _cityId = id
+      _cityId = id;
     }
     public int GetDepartureTime()
     {
