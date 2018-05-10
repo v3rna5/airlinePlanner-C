@@ -1,86 +1,91 @@
 using System.Collections.Generic;
+using System;
 using Microsoft.AspNetCore.Mvc;
 using MySql.Data.MySqlClient;
 using AirplanePlanner.Models;
-using System;
 
 namespace AirplanePlanner.Controllers
 {
     public class FlightsController : Controller
     {
-       [HttpGet("/flights")]
+
+      [HttpGet("/flights")]
        public ActionResult Index()
        {
            List<Flight> allFlights = Flight.GetAll();
            return View(allFlights);
        }
-
        [HttpGet("/flights/new")]
         public ActionResult CreateForm()
         {
             return View();
         }
-        [HttpPost("/fights")]
+        [HttpPost("/flights")]
         public ActionResult Create()
         {
-            Flight newFlight = new Flight(Request.Form["flight-description"]);
+            Flight newFlight = new Flight(Request.Form["flight-name"]);
             newFlight.Save();
             return RedirectToAction("Success", "Home");
         }
 
-       [HttpGet("/cities/{cityId}/flights/new")]
-       public ActionResult CreateForm(int cityId)
-       {
-          Dictionary<string, object> model = new Dictionary<string, object>();
-          City city = City.Find(cityId);
-          return View(city);
-       }
+      //  [HttpGet("/categories/new")]
+      //  public ActionResult CreateForm()
+      //  {
+      //      return View();
+      //  }
+       //
+      //  [HttpPost("/categories/new")]
+      //  public ActionResult Create()
+      //  {
+      //      Category newCategory = new Category(Request.Form["category-name"]);
+      //      newCategory.Save();
+      //      List<Category> allCategories = Category.GetAll();
+      //      return View("Index", allCategories);
+      //  }
 
-       [HttpGet("/flights/{id}")]
-        public ActionResult Details(int id)
-        {
-            Dictionary<string, object> model = new Dictionary<string, object>();
-            Flight selectedFlight = Flight.Find(id);
-            List<City> flightCities = selectedFlight.GetCities();
-            List<City> allCities = City.GetAll();
-            model.Add("selectedFlight", selectedFlight);
-            model.Add("flightCities", flightCities);
-            model.Add("allCities", allCities);
-            return View(model);
+      [HttpGet("/flights/{id}")]
+      public ActionResult Details(int id)
+      {
+         Dictionary<string, object> model = new Dictionary<string, object>();
+         Flight selectedFlight = Flight.Find(id);
+         List<City> flightCities = selectedFlight.GetCities();
+         List<City> allCities = City.GetAll();
+         model.Add("selectedFlight", selectedFlight);
+         model.Add("flightCities", flightCities);
+         model.Add("allCities", allCities);
+         return View(model);
+      }
 
-        }
+      //  [HttpPost("/items")]
+      //  public ActionResult CreateItem()
+      //  {
+      //    Dictionary<string, object> model = new Dictionary<string, object>();
+      //    Category foundCategory = Category.Find(Int32.Parse(Request.Form["category-id"]));
+      //    Item newItem = new Item(Request.Form["item-description"]);
+      //   //  newItem.SetDate(Request.Form["item-due"]);
+      //    newItem.Save();
+      //    foundCategory.AddItem(newItem);
+      //    List<Item> categoryItems = foundCategory.GetItems();
+      //    model.Add("items", categoryItems);
+      //    model.Add("category", foundCategory);
+      //    return View("Details", model);
+      //  }
+      //
 
-       [HttpGet("/cities/{cityId}/flights/{GetFlightsId}")]
-       public ActionResult Details(int cityId, int flightId)
-       {
-          Flight flight = Flight.Find(flightId);
-          Dictionary<string, object> model = new Dictionary<string, object>();
-          City city = City.Find(cityId);
-          model.Add("flight", flight);
-          model.Add("city", city);
-          return View(flight);
-       }
-
-      [HttpPost("/flights/{flightId}/cities/new")]
+       [HttpPost("/flights/{flightId}/cities/new")]
         public ActionResult AddCity(int flightId)
         {
             Flight flight = Flight.Find(flightId);
-            City city = City.Find(Int32.Parse(Request.Form["AddCity-id"]));
+            City city = City.Find(Int32.Parse(Request.Form["city-id"]));
             flight.AddCity(city);
             return RedirectToAction("Details",  new { id = flightId });
         }
-       [HttpGet("/flights/{id}/update")]
-        public ActionResult UpdateForm(int id)
-        {
-            Flight thisFlight = Flight.Find(id);
-            return View(thisFlight);
-        }
-
-        [HttpPost("/cities/{id}/delete")]
-         public ActionResult DeleteFlight(int id)
-         {
-             Flight.Delete(id);
-             return RedirectToAction("Details", "Cities", new { id = id });
-         }
+      //  [HttpPost("/items/{id}/update")]
+      //  public ActionResult Update(int id)
+      //  {
+      //      Item thisItem = Item.Find(id);
+      //      thisItem.Edit(Request.Form["newname"]);
+      //      return RedirectToAction("Details");
+      //  }
     }
 }

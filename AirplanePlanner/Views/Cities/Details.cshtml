@@ -1,15 +1,15 @@
 @using AirplanePlanner.Models;
 
-<h1>Airline Database</h1>
-<h2>City: @Model["selectedCity"].GetName()</h2>
+<h1>To Do List</h1>
+<h2>City: @Model["selectedCity"].GetDescription()</h2>
 <hr />
 @if (@Model["cityFlights"].Count != 0)
 {
-  <h4>Here are all the flights in this city:</h4>
+  <h4>This city has these flights:</h4>
   <ul>
-    @foreach (var flight in @Model["cityFlights"])
+    @foreach (Flight flight in @Model["cityFlights"])
     {
-      <li>@flight.GetDescription()</li>
+      <li>@flight.GetName()</li>
     }
   </ul>
 }
@@ -19,9 +19,9 @@
   <select id='flight-id' name='flight-id' type='text'>
     @foreach (var flight in @Model["allFlights"])
     {
-      <option value='@flight.GetId()'>@flight.GetDescription()</option>
+      <option value='@flight.GetId()'>@flight.GetName()</option>
     }
   </select>
   <button type='submit'>Add</button>
 </form>
-<p><a href="/">Return to Main Page</a></p>
+<p><a href="/">Return to Main Page.</a></p>

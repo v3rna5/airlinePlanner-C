@@ -6,13 +6,9 @@
   <ul>
     @foreach (var city in Model)
     {
-      <li><a href="/cities/@city.GetId()">@city.GetName()</a></li>
-      <form action='/cities/@city.GetId()/delete' method="post">
-            <button class="btn" type="submit">Delete City</button>
-            </form>
+      <li><a href='/cities/@city.GetId()'>@city.GetDescription()</a></li>
     }
   </ul>
 }
-
-<h4><a href="/cities/new">Add a new city</a></h4>
+<h4><a href="/cities/new">Add new city</a></h4>
 <h4><a href="/">Return home</a></h4>

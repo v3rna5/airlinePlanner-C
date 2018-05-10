@@ -6,9 +6,13 @@
   <ul>
     @foreach (var flight in Model)
     {
-      <li><a href='/flights/@flight.GetId()'>@flight.GetDescription()</a></li>
+      <li><a href="/flights/@flight.GetId()">@flight.GetName()</a></li>
+      <form action='/flights/@flight.GetId()/delete' method="post">
+            <button class="btn" type="submit">Delete Flight</button>
+            </form>
     }
   </ul>
 }
-<h4><a href="/flights/new">Add new flight</a></h4>
+
+<h4><a href="/flights/new">Add a new flight</a></h4>
 <h4><a href="/">Return home</a></h4>
