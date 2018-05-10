@@ -5,62 +5,126 @@ using System;
 
 namespace AirplanePlanner.Models
 {
-  public class Cities
+  public class City
   {
     private string _name;
     private int _id;
+    private List<Flight> _flights;
 
-    public Cities(string name, int Id = 0)
+    public City(string cityName, int city_id = 0)
     {
-      _name = name;
-      _id = Id;
+      _name = cityName;
+      _id = city_id;
     }
 
-    public string GetName()
+    public override bool Equals(System.Object otherCity)
     {
-      return _name;
+      if (!(otherCity is City))
+      {
+        return false;
+      }
+      else
+      {
+        City newCity = (City) otherCity;
+        bool idEquality = this.GetId() == newCity.GetId();
+        bool nameEquality = this.GetName() == newCity.GetName();
+        return (idEquality && nameEquality);
+      }
     }
-    public int GetId()
+
+    public override int GetHashCode()
     {
-      return _id;
+         return this.GetName().GetHashCode();
     }
+
     public List<Flight> GetFlights()
-        {
-          MySqlConnection conn = DB.Connection();
-          conn.Open();
-          MySqlCommand cmd = conn.CreateCommand() as MySqlCommand;
-          cmd.CommandText = @"SELECT flights.* FROM cities
-              JOIN cities_flights ON (cities.id = cities_flights.city_id)
-              JOIN flights ON (cities_flights.flight_id = flights.id)
-              WHERE cities.id = @CityId;";
-
-          MySqlParameter cityIdParameter = new MySqlParameter();
-          cityIdParameter.ParameterName = "@CityId";
-          cityIdParameter.Value = _id;
-          cmd.Parameters.Add(cityIdParameter);
-
-          MySqlDataReader rdr = cmd.ExecuteReader() as MySqlDataReader;
-          List<Flight> flights = new List<Flight>{};
-
-          while(rdr.Read())
           {
-            int flightId = rdr.GetInt32(0);
-            int flightDepartureTime = rdr.GetInt32(1);
-            string flightDepartureCity = rdr.GetString(2);
-            string flightArrivalCity = rdr.GetString(3);
-            string flightStatus = rdr.GetString(4);
-            //string city_id = rdr.GetInt32(5)
-            Flight newFlight = new Flight(flightId, flightDepartureTime, flightDepartureCity, flightArrivalCity, flightStatus);
-            flights.Add(newFlight);
+              MySqlConnection conn = DB.Connection();
+              conn.Open();
+              MySqlCommand cmd = conn.CreateCommand() as MySqlCommand;
+              cmd.CommandText = @"SELECT flights.* FROM cities
+                  JOIN cities_flights ON (cities.id = cities_flights.city_id)
+                  JOIN flights ON (cities_flights.flight_id = flights.id)
+                  WHERE cities.id = @CityId;";
+
+              MySqlParameter cityIdParameter = new MySqlParameter();
+              cityIdParameter.ParameterName = "@CityId";
+              cityIdParameter.Value = _id;
+              cmd.Parameters.Add(cityIdParameter);
+
+              MySqlDataReader rdr = cmd.ExecuteReader() as MySqlDataReader;
+              List<Flight> flights = new List<Flight>{};
+
+              while(rdr.Read())
+              {
+                int flightId = rdr.GetInt32(0);
+                string flightDescription = rdr.GetString(1);
+                Flight newFlight = new Flight(flightDescription, flightId);
+                flights.Add(newFlight);
+              }
+              conn.Close();
+              if (conn != null)
+              {
+                  conn.Dispose();
+              }
+              return flights;
           }
-          conn.Close();
-          if (conn != null)
-          {
-              conn.Dispose();
-          }
-          return flights;
-        }
-      public void AddFlight(Flight newFlight)
+          //Old Get Items without Join
+//           public List<Item> GetItems()
+// {
+//     MySqlConnection conn = DB.Connection();
+//     conn.Open();
+//     var cmd = conn.CreateCommand() as MySqlCommand;
+//     cmd.CommandText = @"SELECT item_id FROM categories_items WHERE category_id = @CategoryId;";
+//
+//     MySqlParameter categoryIdParameter = new MySqlParameter();
+//     categoryIdParameter.ParameterName = "@CategoryId";
+//     categoryIdParameter.Value = _id;
+//     cmd.Parameters.Add(categoryIdParameter);
+//
+//     var rdr = cmd.ExecuteReader() as MySqlDataReader;
+//
+//     List<int> itemIds = new List<int> {};
+//     while(rdr.Read())
+//     {
+//         int itemId = rdr.GetInt32(0);
+//         itemIds.Add(itemId);
+//     }
+//     rdr.Dispose();
+//
+//     List<Item> items = new List<Item> {};
+//     foreach (int itemId in itemIds)
+//     {
+//         var itemQuery = conn.CreateCommand() as MySqlCommand;
+//         itemQuery.CommandText = @"SELECT * FROM items WHERE id = @ItemId;";
+//
+//         MySqlParameter itemIdParameter = new MySqlParameter();
+//         itemIdParameter.ParameterName = "@ItemId";
+//         itemIdParameter.Value = itemId;
+//         itemQuery.Parameters.Add(itemIdParameter);
+//
+//         var itemQueryRdr = itemQuery.ExecuteReader() as MySqlDataReader;
+//         while(itemQueryRdr.Read())
+//         {
+//             int thisItemId = itemQueryRdr.GetInt32(0);
+//             string itemDescription = itemQueryRdr.GetString(1);
+//             Item foundItem = new Item(itemDescription, thisItemId);
+//             items.Add(foundItem);
+//         }
+//         itemQueryRdr.Dispose();
+//     }
+//     conn.Close();
+//     if (conn != null)
+//     {
+//         conn.Dispose();
+//     }
+//     return items;
+// }
+
+
+
+
+    public void AddFlight(Flight newFlight)
         {
             MySqlConnection conn = DB.Connection();
             conn.Open();
@@ -84,53 +148,82 @@ namespace AirplanePlanner.Models
                 conn.Dispose();
             }
         }
-        public void Save()
-        {
-          MySqlConnection conn = DB.Connection();
-          conn.Open();
 
-          var cmd = conn.CreateCommand() as MySqlCommand;
-          cmd.CommandText = @"INSERT INTO cities (name) VALUES (@name);";
+    public string GetName()
+    {
+      return _name;
+    }
+    public int GetId()
+    {
+      return _id;
+    }
 
-          MySqlParameter name = new MySqlParameter();
-          name.ParameterName = "@name";
-          name.Value = this._name;
-          cmd.Parameters.Add(name);
+    public void SetId(int newId)
+    {
+      _id = newId;
+    }
 
-          // Code to declare, set, and add values to a cityId SQL parameters has also been removed.
+    public void SetName(string newName)
+    {
+      _name = newName;
+    }
 
-          cmd.ExecuteNonQuery();
-          _id = (int) cmd.LastInsertedId;
-          conn.Close();
-          if (conn != null)
-          {
-            conn.Dispose();
-          }
-        }
-        public static List<Cities> GetAll()
-       {
-        List<Cities> allCities = new List<Cities> {};
-        MySqlConnection conn = DB.Connection();
-        conn.Open();
-        MySqlCommand cmd = conn.CreateCommand() as MySqlCommand;
-        cmd.CommandText = @"SELECT * FROM cities;";
-        MySqlDataReader rdr = cmd.ExecuteReader() as MySqlDataReader;
-        while(rdr.Read())
-        {
-          int cityId = rdr.GetInt32(0);
-          string cityName = rdr.GetString(1);
-          Cities newCity = new Cities(cityName);
-          newCity.SetId(cityId);
-          allCities.Add(newCity);
-        }
-        conn.Close();
-        if (conn != null)
-        {
-          conn.Dispose();
-        }
-        return allCities;
+    public void SetList(List<Flight> flights)
+    {
+      _flights = flights;
+    }
+
+
+
+    public void Save()
+    {
+      MySqlConnection conn = DB.Connection();
+      conn.Open();
+
+      var cmd = conn.CreateCommand() as MySqlCommand;
+      cmd.CommandText = @"INSERT INTO cities (name) VALUES (@name);";
+
+      MySqlParameter name = new MySqlParameter();
+      name.ParameterName = "@name";
+      name.Value = this._name;
+      cmd.Parameters.Add(name);
+
+      // Code to declare, set, and add values to a categoryId SQL parameters has also been removed.
+
+      cmd.ExecuteNonQuery();
+      _id = (int) cmd.LastInsertedId;
+      conn.Close();
+      if (conn != null)
+      {
+        conn.Dispose();
       }
-      public static Cities Find(int id)
+    }
+
+    public static List<City> GetAll()
+    {
+      List<City> allCities = new List<City> {};
+      MySqlConnection conn = DB.Connection();
+      conn.Open();
+      MySqlCommand cmd = conn.CreateCommand() as MySqlCommand;
+      cmd.CommandText = @"SELECT * FROM cities;";
+      MySqlDataReader rdr = cmd.ExecuteReader() as MySqlDataReader;
+      while(rdr.Read())
+      {
+        int cityId = rdr.GetInt32(0);
+        string cityName = rdr.GetString(1);
+        City newCity = new City(cityName);
+        newCity.SetId(cityId);
+        allCities.Add(newCity);
+      }
+      conn.Close();
+      if (conn != null)
+      {
+        conn.Dispose();
+      }
+      return allCities;
+    }
+
+    public static City Find(int id)
     {
       MySqlConnection conn = DB.Connection();
       conn.Open();
@@ -154,6 +247,50 @@ namespace AirplanePlanner.Models
         cityName = rdr.GetString(1);
     //    itemDueDate = rdr.GetString(2);
         // We no longer read the itemCategoryId here, either.
+      }
+
+      // Constructor below no longer includes a itemCategoryId parameter:
+      City newCity = new City(cityName, cityId);
+    //  newCategory.SetDate(ItemDueDate);
+      conn.Close();
+      if (conn != null)
+      {
+          conn.Dispose();
+      }
+
+      return newCity;
+    }
+
+    public void Delete()
+    {
+      MySqlConnection conn = DB.Connection();
+      conn.Open();
+
+      MySqlCommand cmd = new MySqlCommand("DELETE FROM cities WHERE id = @CityId; DELETE FROM cities_flights WHERE city_id = @CityId;", conn);
+      MySqlParameter cityIdParameter = new MySqlParameter();
+      cityIdParameter.ParameterName = "@CityId";
+      cityIdParameter.Value = this.GetId();
+
+      cmd.Parameters.Add(cityIdParameter);
+      cmd.ExecuteNonQuery();
+
+      if (conn != null)
+      {
+        conn.Close();
+      }
+    }
+
+    public static void DeleteAll()
+    {
+      MySqlConnection conn = DB.Connection();
+      conn.Open();
+      var cmd = conn.CreateCommand() as MySqlCommand;
+      cmd.CommandText = @"DELETE FROM cities;";
+      cmd.ExecuteNonQuery();
+      conn.Close();
+      if (conn != null)
+      {
+        conn.Dispose();
       }
     }
   }

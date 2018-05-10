@@ -1,11 +1,12 @@
-using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
+using MySql.Data.MySqlClient;
 using AirplanePlanner.Models;
 using System;
 
 namespace AirplanePlanner.Controllers
 {
-  public class FlightsController : Controller
+    public class FlightsController : Controller
     {
        [HttpGet("/flights")]
        public ActionResult Index()
@@ -19,19 +20,19 @@ namespace AirplanePlanner.Controllers
         {
             return View();
         }
-        [HttpPost("/flights")]
+        [HttpPost("/fights")]
         public ActionResult Create()
         {
-            Flight newFlight = new Flight(Request.Form["flight-city"], int.Parse(Request.Form["flight-deptTime"]), Request.Form["flight-deptCity"], Request.Form["flight-arrCity"], Request.Form["flight-status"]);
+            Flight newFlight = new Flight(Request.Form["flight-description"]);
             newFlight.Save();
             return RedirectToAction("Success", "Home");
         }
-        
+
        [HttpGet("/cities/{cityId}/flights/new")]
        public ActionResult CreateForm(int cityId)
        {
           Dictionary<string, object> model = new Dictionary<string, object>();
-          Cities city = Cities.Find(cityId);
+          City city = City.Find(cityId);
           return View(city);
        }
 
@@ -40,8 +41,8 @@ namespace AirplanePlanner.Controllers
         {
             Dictionary<string, object> model = new Dictionary<string, object>();
             Flight selectedFlight = Flight.Find(id);
-            List<Cities> flightCities = selectedFlight.GetCities();
-            List<Cities> allCities = Cities.GetAll();
+            List<City> flightCities = selectedFlight.GetCities();
+            List<City> allCities = City.GetAll();
             model.Add("selectedFlight", selectedFlight);
             model.Add("flightCities", flightCities);
             model.Add("allCities", allCities);
@@ -49,22 +50,22 @@ namespace AirplanePlanner.Controllers
 
         }
 
-       [HttpGet("/cities/{cityId}/items/{flightId}")]
+       [HttpGet("/cities/{cityId}/flights/{GetFlightsId}")]
        public ActionResult Details(int cityId, int flightId)
        {
           Flight flight = Flight.Find(flightId);
           Dictionary<string, object> model = new Dictionary<string, object>();
-          Cities city = Cities.Find(cityId);
+          City city = City.Find(cityId);
           model.Add("flight", flight);
           model.Add("city", city);
-          return View(city);
+          return View(flight);
        }
 
       [HttpPost("/flights/{flightId}/cities/new")]
         public ActionResult AddCity(int flightId)
         {
-            Flight flight = flight.Find(flightId);
-            Cities city = Cities.Find(Int32.Parse(Request.Form["city-id"]));
+            Flight flight = Flight.Find(flightId);
+            City city = City.Find(Int32.Parse(Request.Form["AddCity-id"]));
             flight.AddCity(city);
             return RedirectToAction("Details",  new { id = flightId });
         }
@@ -76,7 +77,7 @@ namespace AirplanePlanner.Controllers
         }
 
         [HttpPost("/cities/{id}/delete")]
-         public ActionResult DeleteItem(int id)
+         public ActionResult DeleteFlight(int id)
          {
              Flight.Delete(id);
              return RedirectToAction("Details", "Cities", new { id = id });

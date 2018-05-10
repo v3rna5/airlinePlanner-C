@@ -1,4 +1,4 @@
-@using Airplaneplanner.Models;
+@using AirplanePlanner.Models;
 
 <h1>To Do List</h1>
 <h2>Flight: @Model["selectedFlight"].GetDescription()</h2>
@@ -7,13 +7,13 @@
 {
   <h4>This flight has these cities:</h4>
   <ul>
-    @foreach (Cities city in @Model["flightCities"])
+    @foreach (City city in @Model["flightCities"])
     {
       <li>@city.GetName()</li>
     }
   </ul>
 }
-<h4>Add a City to this Flight:</h4>
+<h4>Add a city to this flight:</h4>
 <form action='/flights/@Model["selectedFlight"].GetId()/cities/new' method='post'>
   <label for='city-id'>Select a city</label>
   <select id='city-id' name='city-id' type='text'>
